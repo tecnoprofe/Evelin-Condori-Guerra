@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Guía Miller Profesional</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Estilos mejorados para iOS */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+    }
+    
+    html {
+      height: 100%;
+      overflow-x: hidden;
+    }
+    
+    body {
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100%;
+    }
+    
+    select, button {
+      -webkit-appearance: none;
+      border-radius: 12px !important;
+    }
+    
+    .clinical-card {
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      border-left: 4px solid #3b82f6;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    .param-header {
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+      color: white;
+      padding: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+    .param-content {
+      padding: 1.25rem;
+    }
+    .prognosis-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-left: auto;
+    }
+    .good {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+    .fair {
+      background-color: #fef9c3;
+      color: #854d0e;
+    }
+    .poor {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+    .icon-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      margin-right: 12px;
+    }
+    
+    /* Fix para Safari */
+    @supports (-webkit-touch-callout: none) {
+      .min-h-screen {
+        min-height: -webkit-fill-available !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-green-50 min-h-screen text-gray-800 p-5">
+  <div class="max-w-md mx-auto">
+    <header class="text-center mb-8 bg-white p-5 rounded-xl shadow-sm">
+      <h1 class="text-2xl font-bold text-blue-900 mb-1">👩‍⚕️ Dra. Evelin Condori Guerra</h1>
+      <h2 class="text-xl font-semibold text-green-700 mb-2">Guía Avanzada de Cobertura Radicular</h2>
+      <p class="text-sm text-gray-500 font-medium">Clasificación de Miller - Versión Profesional</p>
+    </header>
+
+    <form id="formGeneral" onsubmit="return generarDiagnostico(event)">
+      <!-- 1. Clasificación de Miller -->
+      <div class="clinical-card">
+        <div class="param-header">
+          <div class="icon-box">
+            <i class="fas fa-teeth text-white text-sm"></i>
+          </div>
+          <span>1. Clasificación de Miller</span>
+          <span id="millerBadge" class="prognosis-badge hidden"></span>
+        </div>
+        <div class="param-content">
+          <select id="clasificacion" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" onchange="mostrarDescripcion()">
+            <option value="">Seleccione clasificación...</option>
+            <option value="I">Clase I</option>
+            <option value="II">Clase II</option>
+            <option value="III">Clase III</option>
+            <option value="IV">Clase IV</option>
+          </select>
+          <div id="descripcionClasificacion" class="text-sm text-blue-700 mt-3 p-3 bg-blue-50 rounded-lg hidden"></div>
+        </div>
+      </div>
+
+      <!-- 2. Fenotipo Gingival -->
+      <div class="clinical-card">
+        <div class="param-header">
+          <div class="icon-box">
+            <i class="fas fa-tooth text-white text-sm"></i>
+          </div>
+          <span>2. Fenotipo Gingival</span>
+        </div>
+        <div class="param-content">
+          <select id="fenotipo" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+            <option value="fino">Fino (translucidez con sonda periodontal)</option>
+            <option value="grueso">Grueso (sin translucidez con sonda)</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-2">Evaluado mediante translucidez de sonda periodontal UNC-15</p>
+        </div>
+      </div>
+
+      <!-- 3. Magnitud de la Recesión -->
+      <div class="clinical-card">
+        <div class="param-header">
+          <div class="icon-box">
+            <i class="fas fa-ruler-vertical text-white text-sm"></i>
+          </div>
+          <span>3. Magnitud de la Recesión</span>
+        </div>
+        <div class="param-content">
+          <select id="recesion" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+            <option value="favorable">Favorable (≤ 3 mm desde CEJ)</option>
+            <option value="desfavorable">Desfavorable (> 3 mm desde CEJ)</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-2">Medida desde la unión amelocementaria (CEJ) al margen gingival</p>
+        </div>
+      </div>
+
+      <!-- 4. Banda de Encía Queratinizada -->
+      <div class="clinical-card">
+        <div class="param-header">
+          <div class="icon-box">
+            <i class="fas fa-layer-group text-white text-sm"></i>
+          </div>
+          <span>4. Banda de Encía Queratinizada</span>
+        </div>
+        <div class="param-content">
+          <select id="banda" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+            <option value="alta">Alta (≥2mm - Colgajo desplazado coronal)</option>
+            <option value="baja">Baja (<2mm - Tunelización)</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-2">Medida desde margen gingival al fondo del surco</p>
+        </div>
+      </div>
+
+      <!-- 5. Lesión Cervical No Cariosa (STEP) + Fenotipo -->
+      <div class="clinical-card">
+        <div class="param-header">
+          <div class="icon-box">
+            <i class="fas fa-file-medical text-white text-sm"></i>
+          </div>
+          <span>5. Lesión STEP + Fenotipo</span>
+        </div>
+        <div class="param-content">
+          <select id="lesion" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+            <option value="presente_fino">Presente con fenotipo fino</option>
+            <option value="presente_grueso">Presente con fenotipo grueso</option>
+            <option value="ausente">Ausente</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-2">Lesiones por estrés tensional en la porción cervical</p>
+        </div>
+      </div>
+
+      <!-- 6. Edad -->
+      <div class="clinical-card">
+        <div class="param-header">
+          <div class="icon-box">
+            <i class="fas fa-user-clock text-white text-sm"></i>
+          </div>
+          <span>6. Edad del Paciente</span>
+        </div>
+        <div class="param-content">
+          <select id="edad" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+            <option value="menor50">≤ 50 años (técnica no influenciada)</option>
+            <option value="mayor50">> 50 años (preferir tunelización)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 7. Altura de la Recesión -->
+      <div class="clinical-card">
+        <div class="param-header">
+          <div class="icon-box">
+            <i class="fas fa-text-height text-white text-sm"></i>
+          </div>
+          <span>7. Altura de la Recesión</span>
+        </div>
+        <div class="param-content">
+          <select id="altura" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+            <option value="menor3mm">< 3 mm (resultados predecibles)</option>
+            <option value="mayor3mm">≥ 3 mm (resultados variables)</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-2">Factor crítico para predictibilidad de cobertura</p>
+        </div>
+      </div>
+
+      <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-medium py-4 px-6 rounded-xl shadow-lg transition-all duration-300 mt-6 mb-10 flex items-center justify-center">
+        <i class="fas fa-file-medical-alt mr-2"></i> Generar Informe Completo
+      </button>
+    </form>
+
+    <div id="resultadoDiagnostico" class="hidden"></div>
+  </div>
+
+  <script>
+    // Detectar iOS
+    const isIOS = () => {
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    };
+
+    // Aplicar fixes específicos para iOS
+    if (isIOS()) {
+      document.addEventListener('DOMContentLoaded', () => {
+        // Fix para el viewport en iOS
+        document.documentElement.style.height = '100%';
+        document.body.style.height = '100%';
+        
+        // Fix para el scroll en formularios
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+          input.addEventListener('focus', () => {
+            setTimeout(() => {
+              input.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }, 300);
+          });
+        });
+      });
+    }
+
+    const descripcionesMiller = {
+      I: {
+        pronostico: "Bueno",
+        descripcion: "Clase I: Recesión gingival que no se extiende a la línea mucogingival. Margen gingival coronal a la línea mucogingival. No hay pérdida de tejido interproximal (hueso o tejido blando). La papila interdental llena completamente el espacio interproximal.",
+        caracteristicas: {
+          cobertura: "85-100%",
+          tecnica: "Colgajo coronal o túnel con/sin CTG",
+          consideraciones: "Excelente candidato para procedimientos de cobertura radicular. Predictibilidad muy alta cuando se combina con fenotipo grueso y recesión ≤3mm."
+        },
+        badgeClass: "good"
+      },
+      II: {
+        pronostico: "Regular",
+        descripcion: "Clase II: Recesión que se extiende hasta o más allá de la línea mucogingival. Margen gingival a nivel o apical a la línea mucogingival. No hay pérdida de tejido interproximal. La papila interdental mantiene su altura normal.",
+        caracteristicas: {
+          cobertura: "70-90%",
+          tecnica: "CAF + CTG o técnica de túnel",
+          consideraciones: "Requiere evaluación cuidadosa de la banda queratinizada. Fenotipos finos necesitan CTG para mejorar resultados."
+        },
+        badgeClass: "fair"
+      },
+      III: {
+        pronostico: "Regular",
+        descripcion: "Clase III: Recesión que se extiende hasta o más allá de la línea mucogingival con pérdida de tejido interproximal o malposición dental. La papila interdental está apical al CEJ pero coronal a la cresta ósea.",
+        caracteristicas: {
+          cobertura: "30-60%",
+          tecnica: "Técnicas regenerativas (CTG + matriz)",
+          consideraciones: "Malposición dental requiere evaluación ortodóncica previa. Cobertura completa improbable."
+        },
+        badgeClass: "fair"
+      },
+      IV: {
+        pronostico: "Malo",
+        descripcion: "Clase IV: Recesión severa con pérdida extensa de hueso y tejidos interproximales. La papila interdental está a nivel de la cresta ósea. Malposición dental severa frecuente.",
+        caracteristicas: {
+          cobertura: "0-30%",
+          tecnica: "Enfoque paliativo (injerto libre o prótesis)",
+          consideraciones: "Objetivos limitados a protección radicular más que cobertura estética."
+        },
+        badgeClass: "poor"
+      }
+    };
+
+    function mostrarDescripcion() {
+      const clasificacion = document.getElementById('clasificacion').value;
+      const descripcionDiv = document.getElementById('descripcionClasificacion');
+      const badgeDiv = document.getElementById('millerBadge');
+      
+      if (clasificacion && descripcionesMiller[clasificacion]) {
+        const data = descripcionesMiller[clasificacion];
+        descripcionDiv.innerHTML = `
+          <p class="font-medium">${data.descripcion}</p>
+          <div class="mt-2 grid grid-cols-3 gap-2 text-center">
+            <div class="bg-blue-100 p-2 rounded">
+              <p class="text-xs font-bold text-blue-800">COBERTURA</p>
+              <p class="font-semibold">${data.caracteristicas.cobertura}</p>
+            </div>
+            <div class="bg-green-100 p-2 rounded">
+              <p class="text-xs font-bold text-green-800">TÉCNICA</p>
+              <p class="text-sm">${data.caracteristicas.tecnica}</p>
+            </div>
+            <div class="bg-yellow-100 p-2 rounded">
+              <p class="text-xs font-bold text-yellow-800">PRONÓSTICO</p>
+              <p class="font-semibold">${data.pronostico}</p>
+            </div>
+          </div>
+        `;
+        descripcionDiv.classList.remove('hidden');
+        
+        badgeDiv.textContent = data.pronostico;
+        badgeDiv.className = `prognosis-badge ${data.badgeClass}`;
+        badgeDiv.classList.remove('hidden');
+        
+        // Scroll suave para iOS
+        if (isIOS()) {
+          setTimeout(() => {
+            descripcionDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 100);
+        }
+      } else {
+        descripcionDiv.classList.add('hidden');
+        badgeDiv.classList.add('hidden');
+      }
+    }
+
+    function generarDiagnostico(event) {
+      event.preventDefault();
+      const clasificacion = document.getElementById('clasificacion').value;
+      
+      if (!clasificacion) {
+        alert("Por favor seleccione una clasificación de Miller");
+        return false;
+      }
+      
+      const fenotipo = document.getElementById('fenotipo').value;
+      const recesion = document.getElementById('recesion').value;
+      const banda = document.getElementById('banda').value;
+      const lesion = document.getElementById('lesion').value;
+      const edad = document.getElementById('edad').value;
+      const altura = document.getElementById('altura').value;
+      
+      const data = descripcionesMiller[clasificacion];
+      
+      // Lógica avanzada de recomendación
+      let tecnicaRecomendada = "";
+      let detallesTecnica = "";
+      let consideracionesEspeciales = [];
+      
+      if (banda === 'alta' && edad === 'menor50') {
+        tecnicaRecomendada = "Colgajo desplazado coronal (CAF)";
+        detallesTecnica = "Técnica de elección cuando existe suficiente encía queratinizada. Permite cobertura predecible con baja morbilidad del sitio donante.";
+        
+        if (fenotipo === 'fino' || lesion.includes('presente')) {
+          tecnicaRecomendada += " + Injerto de tejido conectivo (CTG)";
+          detallesTecnica += " El CTG es mandatorio en fenotipos finos o con presencia de lesiones STEP para aumentar el grosor gingival y mejorar la vascularización.";
+        }
+      } else {
+        tecnicaRecomendada = "Técnica de tunelización";
+        detallesTecnica = "Indicada cuando la banda queratinizada es insuficiente (<2mm) o en pacientes mayores de 50 años. Menor morbilidad pero requiere mayor habilidad técnica.";
+        
+        if (fenotipo === 'fino' || lesion.includes('presente') || altura === 'mayor3mm') {
+          tecnicaRecomendada += " + Injerto de tejido conectivo (CTG)";
+          detallesTecnica += " El CTG está indicado para aumentar el grosor del tejido, especialmente en recesiones >3mm o con fenotipo fino.";
+        }
+      }
+      
+      // Consideraciones especiales
+      if (lesion.includes('presente')) {
+        consideracionesEspeciales.push({
+          icon: "exclamation-triangle",
+          color: "orange",
+          text: "Las lesiones STEP requieren manejo previo (desensibilización, restauración con resina flow o ionómero) antes del procedimiento quirúrgico."
+        });
+      }
+      
+      if (edad === 'mayor50') {
+        consideracionesEspeciales.push({
+          icon: "user-clock",
+          color: "blue",
+          text: "Pacientes >50 años pueden presentar menor capacidad de cicatrización. Considerar técnicas menos invasivas y tiempos de curación extendidos."
+        });
+      }
+      
+      if (altura === 'mayor3mm') {
+        consideracionesEspeciales.push({
+          icon: "ruler-vertical",
+          color: "red",
+          text: "Recesiones ≥3mm tienen menor predictibilidad. Considerar técnicas combinadas y posible necesidad de múltiples procedimientos."
+        });
+      }
+      
+      // Generar informe profesional
+      const informe = `
+        <div class="clinical-card mt-8">
+          <div class="param-header">
+            <div class="icon-box">
+              <i class="fas fa-file-medical text-white text-sm"></i>
+            </div>
+            <span>Informe Clínico Completo</span>
+            <span class="${data.badgeClass} prognosis-badge">${data.pronostico}</span>
+          </div>
+          <div class="param-content">
+            
+            <div class="mb-6">
+              <h3 class="text-lg font-bold text-blue-800 mb-3 border-b pb-2">📊 Resumen de Parámetros</h3>
+              <div class="grid grid-cols-2 gap-3 text-sm">
+                <div class="bg-gray-50 p-3 rounded-lg">
+                  <p class="font-semibold text-gray-700">1. Miller</p>
+                  <p>Clase ${clasificacion} <span class="${data.badgeClass} prognosis-badge text-xs">${data.pronostico}</span></p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                  <p class="font-semibold text-gray-700">2. Fenotipo</p>
+                  <p>${fenotipo === 'fino' ? 'Fino' : 'Grueso'}</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                  <p class="font-semibold text-gray-700">3. Recesión</p>
+                  <p>${recesion === 'favorable' ? '≤3mm' : '>3mm'}</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                  <p class="font-semibold text-gray-700">4. Banda</p>
+                  <p>${banda === 'alta' ? 'Alta (≥2mm)' : 'Baja (<2mm)'}</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                  <p class="font-semibold text-gray-700">5. Lesión STEP</p>
+                  <p>${lesion.includes('presente') ? 'Presente' : 'Ausente'}</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                  <p class="font-semibold text-gray-700">6. Edad</p>
+                  <p>${edad === 'menor50' ? '≤50 años' : '>50 años'}</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                  <p class="font-semibold text-gray-700">7. Altura</p>
+                  <p>${altura === 'menor3mm' ? '<3mm' : '≥3mm'}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <h3 class="text-lg font-bold text-blue-800 mb-3 border-b pb-2">💡 Recomendación Técnica</h3>
+              <div class="bg-blue-50 p-4 rounded-lg">
+                <h4 class="font-bold text-blue-700 mb-2">${tecnicaRecomendada}</h4>
+                <p class="text-sm">${detallesTecnica}</p>
+              </div>
+              
+              <div class="mt-4">
+                <h4 class="font-semibold text-gray-700 mb-2">📌 Protocolo Quirúrgico Sugerido:</h4>
+                <ol class="list-decimal pl-5 space-y-2 text-sm">
+                  <li>Preparación del sitio receptor (raspado radicular, acondicionamiento con EDTA 24%)</li>
+                  ${tecnicaRecomendada.includes('CAF') ? 
+                    '<li>Incisión intrasulcular y disección del colgajo mucoperióstico</li>' : 
+                    '<li>Creación de túnel vestibular con instrumentos microquirúrgicos</li>'}
+                  ${tecnicaRecomendada.includes('CTG') ? 
+                    '<li>Obtención de CTG del paladar (1.5-2mm de grosor)</li>' : ''}
+                  <li>Fijación del colgajo/injerto con sutura 6-0 o 7-0</li>
+                  <li>Protección con cemento quirúrgico (si es necesario)</li>
+                </ol>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <h3 class="text-lg font-bold text-blue-800 mb-3 border-b pb-2">🔬 Análisis Técnico</h3>
+              <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-700 mb-2">Clase Miller ${clasificacion}:</h4>
+                <p class="text-sm mb-3">${data.descripcion}</p>
+                
+                <div class="grid grid-cols-2 gap-3 text-center mb-3">
+                  <div class="bg-green-50 p-2 rounded">
+                    <p class="text-xs font-bold text-green-700">COBERTURA ESPERADA</p>
+                    <p class="font-bold">${data.caracteristicas.cobertura}</p>
+                  </div>
+                  <div class="bg-blue-50 p-2 rounded">
+                    <p class="text-xs font-bold text-blue-700">TÉCNICA IDEAL</p>
+                    <p class="text-sm">${data.caracteristicas.tecnica}</p>
+                  </div>
+                </div>
+                
+                <h4 class="font-semibold text-gray-700 mt-3 mb-2">Interrelación de Parámetros:</h4>
+                <ul class="list-disc pl-5 space-y-1 text-sm">
+                  <li>Fenotipo <strong>${fenotipo}</strong> influye en ${fenotipo === 'fino' ? 'la necesidad de CTG para evitar recidivas' : 'la estabilidad del resultado a largo plazo'}</li>
+                  <li>Recesión <strong>${recesion === 'favorable' ? '≤3mm' : '>3mm'}</strong> ${recesion === 'favorable' ? 'permite mayor predictibilidad' : 'requiere evaluación cuidadosa de la técnica'}</li>
+                  <li>Banda queratinizada <strong>${banda === 'alta' ? 'alta' : 'baja'}</strong> ${banda === 'alta' ? 'facilita el desplazamiento coronal' : 'indica necesidad de técnicas de túnel'}</li>
+                  ${lesion.includes('presente') ? '<li>Lesión STEP presente requiere manejo de la superficie radicular previo a la cirugía</li>' : ''}
+                  ${edad === 'mayor50' ? '<li>Edad >50 años sugiere técnicas menos invasivas y mayor tiempo de cicatrización</li>' : ''}
+                </ul>
+              </div>
+            </div>
+            
+            ${consideracionesEspeciales.length > 0 ? `
+            <div class="mb-6">
+              <h3 class="text-lg font-bold text-blue-800 mb-3 border-b pb-2">⚠️ Consideraciones Especiales</h3>
+              <div class="space-y-3">
+                ${consideracionesEspeciales.map(item => `
+                  <div class="flex items-start bg-${item.color}-50 p-3 rounded-lg">
+                    <i class="fas fa-${item.icon} text-${item.color}-500 mt-1 mr-3"></i>
+                    <p class="text-sm flex-1">${item.text}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            ` : ''}
+            
+            <div>
+              <h3 class="text-lg font-bold text-blue-800 mb-3 border-b pb-2">📋 Plan de Tratamiento Integral</h3>
+              <div class="bg-green-50 p-4 rounded-lg">
+                <ol class="list-decimal pl-5 space-y-2 text-sm">
+                  <li><strong>Fase preparatoria:</strong> Control de placa bacteriana, terapia periodontal básica, eliminación de factores traumáticos</li>
+                  ${lesion.includes('presente') ? '<li><strong>Manejo de lesión STEP:</strong> Desensibilización, restauración con resina flow o ionómero de vidrio</li>' : ''}
+                  <li><strong>Técnica quirúrgica:</strong> ${tecnicaRecomendada}</li>
+                  ${tecnicaRecomendada.includes('CTG') ? '<li><strong>Obtención de CTG:</strong> Paladar (1.5-2mm grosor), manejo del sitio donante</li>' : ''}
+                  <li><strong>Postoperatorio:</strong> Analgesia, antibiótico si indicado, instrucciones de higiene</li>
+                  <li><strong>Seguimiento:</strong> A 1 semana, 1 mes, 3 meses y 6 meses</li>
+                  <li><strong>Evaluación final:</strong> Medición de cobertura a los 6 meses</li>
+                </ol>
+              </div>
+              
+              <div class="mt-4 bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-400">
+                <h4 class="font-semibold text-yellow-800 mb-1">📅 Pronóstico Esperado:</h4>
+                <p class="text-sm">${data.caracteristicas.consideraciones}</p>
+                <p class="text-sm mt-2">${altura === 'menor3mm' ? 'Recesión <3mm: Alta predictibilidad' : 'Recesión ≥3mm: Resultados variables, posible necesidad de retratamiento'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      const resultadoDiv = document.getElementById('resultadoDiagnostico');
+      resultadoDiv.innerHTML = informe;
+      resultadoDiv.classList.remove('hidden');
+      
+      // Scroll al resultado con ajuste para iOS
+      setTimeout(() => {
+        resultadoDiv.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: isIOS() ? 'center' : 'start' 
+        });
+      }, isIOS() ? 300 : 0);
+      
+      return false;
+    }
+  </script>
+</body>
+</html>
